@@ -1,4 +1,8 @@
+import Menu from "./Menu";
+import Admin from "./Admin";
 import Login from "./Login";
+import Seed from "./Seed";
+import CreateShop from "./CreateShop";
 
 export default function App() {
   const path = window.location.pathname.toLowerCase();
@@ -10,4 +14,5 @@ export default function App() {
 
   return <Menu />;
 }
+
 
