@@ -6,6 +6,13 @@ export default function Admin() {
   /* 🔑 Read shop id from URL */
   const params = new URLSearchParams(window.location.search);
   const shopId = (params.get("shop") || "").toLowerCase();
+    /* 🔒 ADMIN PROTECTION — PASTE HERE */
+  useEffect(() => {
+    const loggedIn = sessionStorage.getItem(`admin_${shopId}`);
+    if (!loggedIn) {
+      window.location.href = `/login?shop=${shopId}`;
+    }
+  }, [shopId]);
 
   const [menu, setMenu] = useState(null);
   const [saving, setSaving] = useState(false);
