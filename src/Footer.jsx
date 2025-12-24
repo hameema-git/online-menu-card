@@ -2,8 +2,9 @@ export default function Footer() {
   return (
     <footer style={styles.footer}>
       <div style={styles.inner}>
-        <div style={styles.brand}>
-          Built with ❤️ by <strong>CodeLeaf</strong>
+        <div style={styles.top}>
+          <span style={styles.brand}>CodeLeaf</span>
+          <span style={styles.tagline}>Software Solutions & Development</span>
         </div>
 
         <div style={styles.links}>
@@ -16,7 +17,7 @@ export default function Footer() {
             Website
           </a>
 
-          <span style={styles.dot}>•</span>
+          <span style={styles.separator}>|</span>
 
           <a
             href="https://wa.me/918075159094"
@@ -38,41 +39,51 @@ export default function Footer() {
 
 const styles = {
   footer: {
-    marginTop: 40,
-    padding: "24px 16px",
-    background: "rgba(0,0,0,0.15)",
-    color: "#ffffff",
-    fontFamily: "system-ui"
+    marginTop: 48,
+    padding: "28px 16px",
+    background: "rgba(0,0,0,0.2)",
+    color: "#e5e7eb",
+    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont"
   },
   inner: {
     maxWidth: 1200,
-    margin: "auto",
+    margin: "0 auto",
     textAlign: "center"
   },
+  top: {
+    marginBottom: 10
+  },
   brand: {
-    fontSize: 15,
+    display: "block",
+    fontSize: 16,
     fontWeight: 700,
-    marginBottom: 8
+    letterSpacing: "0.5px"
+  },
+  tagline: {
+    display: "block",
+    fontSize: 13,
+    opacity: 0.75,
+    marginTop: 2
   },
   links: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
     fontSize: 14,
-    marginBottom: 8,
+    marginBottom: 10,
     flexWrap: "wrap"
   },
   link: {
-    color: "#ffd166",
+    color: "#fbbf24",
     textDecoration: "none",
-    fontWeight: 600
+    fontWeight: 500
   },
-  dot: {
-    opacity: 0.6
+  separator: {
+    opacity: 0.4
   },
   copy: {
     fontSize: 12,
-    opacity: 0.75
+    opacity: 0.6
   }
 };
