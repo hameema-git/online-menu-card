@@ -180,8 +180,8 @@ const styles = {
     padding: "28px 16px"
   },
   logo: {
-    width: 90,
-    height: 90,
+    width: 120,
+    height: 120,
     objectFit: "contain",
     marginBottom: 10
   },
