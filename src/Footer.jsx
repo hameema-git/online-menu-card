@@ -4,7 +4,7 @@ export default function Footer() {
       <div style={styles.inner}>
         <div style={styles.top}>
           <span style={styles.brand}>CodeLeaf</span>
-          <span style={styles.tagline}>Software Solutions & Development</span>
+          {/* <span style={styles.tagline}>Software Solutions & Development</span> */}
         </div>
 
         <div style={styles.links}>
@@ -42,7 +42,7 @@ const styles = {
     marginTop: 48,
     padding: "28px 16px",
     background: "rgba(0,0,0,0.2)",
-    color: "#e5e7eb",
+    color: "#2D120F",
     fontFamily: "system-ui, -apple-system, BlinkMacSystemFont"
   },
   inner: {
@@ -75,7 +75,7 @@ const styles = {
     flexWrap: "wrap"
   },
   link: {
-    color: "#fbbf24",
+    color: "#2D120F",
     textDecoration: "none",
     fontWeight: 500
   },
