@@ -96,7 +96,7 @@ export default function Menu() {
         {categories
           .filter(cat => cat.available)
           .map((cat, i) => {
-            const isOpenCat = openCats[i] ?? true;
+            const isOpenCat = openCats[i] ?? false;
 
             return (
               <section key={i} style={styles.category}>
