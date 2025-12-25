@@ -96,7 +96,7 @@ export default function Menu() {
               <section key={i} style={styles.category}>
 
                 {/* CATEGORY HEADER */}
-                <button
+                {/* <button
                   onClick={() => toggleCategory(i)}
                   style={{
                     ...styles.categoryHeader,
@@ -105,16 +105,38 @@ export default function Menu() {
                 >
                   <span>{cat.name}</span>
                   <span>{isOpenCat ? "−" : "+"}</span>
-                </button>
+                </button> */}
+
+                <button
+  onClick={() => toggleCategory(i)}
+  style={{
+    ...styles.categoryHeader,
+    borderBottom: `1px solid ${colors.divider}`
+  }}
+>
+  <div style={styles.categoryTitle}>
+    {cat.image && (
+      <img
+        src={cat.image}
+        alt={cat.name}
+        style={styles.categoryIcon}
+      />
+    )}
+    <span>{cat.name}</span>
+  </div>
+
+  <span>{isOpenCat ? "−" : "+"}</span>
+</button>
+
 
                 {/* CATEGORY IMAGE (optional, stand-alone) */}
-                {isOpenCat && cat.image && (
+                {/* {isOpenCat && cat.image && (
                   <img
                     src={cat.image}
                     alt={cat.name}
                     style={styles.categoryImg}
                   />
-                )}
+                )} */}
 
                 {/* CATEGORY DESCRIPTION (stand-alone) */}
                 {isOpenCat && cat.comment && (
@@ -282,5 +304,18 @@ const styles = {
     opacity: 0.85,
     marginTop: 6,
     lineHeight: 1.4
-  }
+  },
+  categoryTitle: {
+  display: "flex",
+  alignItems: "center",
+  gap: 12
+},
+categoryIcon: {
+  width: 36,
+  height: 36,
+  borderRadius: 8,
+  objectFit: "cover",
+  flexShrink: 0
+},
+
 };
