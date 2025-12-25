@@ -6,7 +6,8 @@ export default function Admin() {
   /* 🔑 Read shop id from URL */
   const params = new URLSearchParams(window.location.search);
   const shopId = (params.get("shop") || "").toLowerCase();
-    /* 🔒 ADMIN PROTECTION — PASTE HERE */
+
+  /* 🔒 ADMIN PROTECTION */
   useEffect(() => {
     const loggedIn = sessionStorage.getItem(`admin_${shopId}`);
     if (!loggedIn) {
@@ -17,6 +18,9 @@ export default function Admin() {
   const [menu, setMenu] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [openAdminCats, setOpenAdminCats] = useState({});
+  const [showTheme, setShowTheme] = useState(true);
 
   useEffect(() => {
     if (!shopId) {
@@ -25,18 +29,15 @@ export default function Admin() {
     }
 
     getDoc(doc(db, "menu", shopId)).then(snap => {
-      if (snap.exists()) {
-        setMenu(snap.data());
-      } else {
-        setError(`❌ Shop "${shopId}" not found`);
-      }
+      if (snap.exists()) setMenu(snap.data());
+      else setError(`❌ Shop "${shopId}" not found`);
     });
   }, [shopId]);
 
   if (error) return <p style={{ padding: 20 }}>{error}</p>;
   if (!menu) return <p style={{ padding: 20 }}>Loading admin panel…</p>;
 
-  /* SAVE MENU */
+  /* SAVE */
   const save = async () => {
     setSaving(true);
     await updateDoc(doc(db, "menu", shopId), menu);
@@ -50,7 +51,13 @@ export default function Admin() {
       ...menu,
       categories: [
         ...menu.categories,
-        { name: "New Category", available: true, items: [] }
+        {
+          name: "New Category",
+          image: "",          // ✅ CATEGORY IMAGE URL
+          available: true,
+          comment: "",
+          items: []
+        }
       ]
     });
   };
@@ -67,9 +74,9 @@ export default function Admin() {
     c[i].items.push({
       name: "New Item",
       price: 0,
-      quantity: "",        // ✅ NEW FIELD
+      quantity: "",
       description: "",
-      image: "",
+      image: "",            // ✅ ITEM IMAGE URL (kept)
       available: true
     });
     setMenu({ ...menu, categories: c });
@@ -91,6 +98,16 @@ export default function Admin() {
           <button style={styles.saveBtn} onClick={save}>
             {saving ? "Saving..." : "💾 Save Changes"}
           </button>
+        </div>
+
+        {/* SEARCH */}
+        <div style={styles.card}>
+          <input
+            style={styles.input}
+            placeholder="🔍 Search category or item..."
+            value={search}
+            onChange={e => setSearch(e.target.value.toLowerCase())}
+          />
         </div>
 
         {/* SHOP DETAILS */}
@@ -116,7 +133,6 @@ export default function Admin() {
             style={styles.input}
             value={menu.logo || ""}
             onChange={e => setMenu({ ...menu, logo: e.target.value })}
-            placeholder="Paste logo image link"
           />
 
           <label style={styles.checkbox}>
@@ -125,176 +141,228 @@ export default function Admin() {
               checked={menu.isOpen}
               onChange={e => setMenu({ ...menu, isOpen: e.target.checked })}
             />
-            Shop Open
+            {menu.isOpen ? "🟢 Shop Open" : "🔴 Shop Closed"}
           </label>
         </div>
 
         {/* THEME */}
         <div style={styles.card}>
-          <h3 style={styles.cardTitle}>🎨 Menu Colors</h3>
+          <h3
+            style={{ ...styles.cardTitle, cursor: "pointer" }}
+            onClick={() => setShowTheme(!showTheme)}
+          >
+            🎨 Menu Colors {showTheme ? "−" : "+"}
+          </h3>
 
-          {Object.entries(menu.theme).map(([key, val]) => (
-            <div key={key} style={styles.colorRow}>
-              <span>{prettyColorName(key)}</span>
-              <input
-                type="color"
-                value={val}
-                onChange={e =>
-                  setMenu({
-                    ...menu,
-                    theme: { ...menu.theme, [key]: e.target.value }
-                  })
-                }
-              />
-            </div>
-          ))}
+          {showTheme &&
+            Object.entries(menu.theme).map(([key, val]) => (
+              <div key={key} style={styles.colorRow}>
+                <span>{prettyColorName(key)}</span>
+                <input
+                  type="color"
+                  value={val}
+                  onChange={e =>
+                    setMenu({
+                      ...menu,
+                      theme: { ...menu.theme, [key]: e.target.value }
+                    })
+                  }
+                />
+              </div>
+            ))}
         </div>
 
         {/* CATEGORIES */}
-        {menu.categories.map((cat, i) => (
-          <div key={i} style={styles.categoryCard}>
-            <label style={styles.label}>Category Name</label>
-            <input
-              style={styles.input}
-              value={cat.name}
-              onChange={e => {
-                const c = [...menu.categories];
-                c[i].name = e.target.value;
-                setMenu({ ...menu, categories: c });
-              }}
-            />
+        {menu.categories
+          .filter(cat =>
+            cat.name.toLowerCase().includes(search) ||
+            cat.items.some(item =>
+              item.name.toLowerCase().includes(search)
+            )
+          )
+          .map((cat, i) => (
+            <div key={i} style={styles.categoryCard}>
 
-            <label style={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={cat.available}
-                onChange={e => {
-                  const c = [...menu.categories];
-                  c[i].available = e.target.checked;
-                  setMenu({ ...menu, categories: c });
-                }}
-              />
-              Show this category
-            </label>
+              <h3
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  setOpenAdminCats(p => ({ ...p, [i]: !p[i] }))
+                }
+              >
+                {cat.name} {openAdminCats[i] ? "−" : "+"}
+              </h3>
 
-            <button style={styles.deleteBtn} onClick={() => removeCategory(i)}>
-              Delete Category
-            </button>
-
-            {/* ITEMS */}
-            {cat.items.map((item, j) => (
-              <div key={j} style={styles.itemCard}>
-                <label style={styles.label}>Item Name</label>
-                <input
-                  style={styles.input}
-                  value={item.name}
-                  onChange={e => {
-                    const c = [...menu.categories];
-                    c[i].items[j].name = e.target.value;
-                    setMenu({ ...menu, categories: c });
-                  }}
-                />
-
-                <label style={styles.label}>Price</label>
-                <input
-                  style={styles.input}
-                  type="number"
-                  value={item.price}
-                  onChange={e => {
-                    const c = [...menu.categories];
-                    c[i].items[j].price = Number(e.target.value);
-                    setMenu({ ...menu, categories: c });
-                  }}
-                />
-
-                {/* ✅ QUANTITY / WEIGHT */}
-                <label style={styles.label}>Quantity / Weight (optional)</label>
-                <input
-                  style={styles.input}
-                  value={item.quantity || ""}
-                  placeholder="eg: 500 g, 1 kg, 1 pc"
-                  onChange={e => {
-                    const c = [...menu.categories];
-                    c[i].items[j].quantity = e.target.value;
-                    setMenu({ ...menu, categories: c });
-                  }}
-                />
-
-                <label style={styles.label}>Description</label>
-                <input
-                  style={styles.input}
-                  value={item.description}
-                  onChange={e => {
-                    const c = [...menu.categories];
-                    c[i].items[j].description = e.target.value;
-                    setMenu({ ...menu, categories: c });
-                  }}
-                />
-
-                <label style={styles.label}>Item Image (URL)</label>
-                <input
-                  style={styles.input}
-                  value={item.image}
-                  onChange={e => {
-                    const c = [...menu.categories];
-                    c[i].items[j].image = e.target.value;
-                    setMenu({ ...menu, categories: c });
-                  }}
-                />
-
-                <label style={styles.checkbox}>
+              {openAdminCats[i] && (
+                <>
+                  <label style={styles.label}>Category Name</label>
                   <input
-                    type="checkbox"
-                    checked={item.available}
+                    style={styles.input}
+                    value={cat.name}
                     onChange={e => {
                       const c = [...menu.categories];
-                      c[i].items[j].available = e.target.checked;
+                      c[i].name = e.target.value;
                       setMenu({ ...menu, categories: c });
                     }}
                   />
-                  Show this item in menu
-                </label>
 
-                <button
-                  style={styles.deleteBtn}
-                  onClick={() => removeItem(i, j)}
-                >
-                  Remove Item
-                </button>
-              </div>
-            ))}
+                  {/* ✅ CATEGORY IMAGE URL */}
+                  <label style={styles.label}>Category Image (URL)</label>
+                  <input
+                    style={styles.input}
+                    value={cat.image || ""}
+                    onChange={e => {
+                      const c = [...menu.categories];
+                      c[i].image = e.target.value;
+                      setMenu({ ...menu, categories: c });
+                    }}
+                  />
 
-            <button style={styles.addBtn} onClick={() => addItem(i)}>
-              ➕ Add Item
-            </button>
-          </div>
-        ))}
+                  <label style={styles.label}>Category Notes (optional)</label>
+                  <input
+                    style={styles.input}
+                    value={cat.comment || ""}
+                    onChange={e => {
+                      const c = [...menu.categories];
+                      c[i].comment = e.target.value;
+                      setMenu({ ...menu, categories: c });
+                    }}
+                  />
+
+                  <label style={styles.checkbox}>
+                    <input
+                      type="checkbox"
+                      checked={cat.available}
+                      onChange={e => {
+                        const c = [...menu.categories];
+                        c[i].available = e.target.checked;
+                        setMenu({ ...menu, categories: c });
+                      }}
+                    />
+                    {cat.available ? "👁 Visible" : "🚫 Hidden"}
+                  </label>
+
+                  <button style={styles.deleteBtn} onClick={() => removeCategory(i)}>
+                    Delete Category
+                  </button>
+
+                  {/* ITEMS */}
+                  {cat.items
+                    .filter(item =>
+                      item.name.toLowerCase().includes(search)
+                    )
+                    .map((item, j) => (
+                      <div key={j} style={styles.itemCard}>
+
+                        <label style={styles.label}>Item Name</label>
+                        <input
+                          style={styles.input}
+                          value={item.name}
+                          onChange={e => {
+                            const c = [...menu.categories];
+                            c[i].items[j].name = e.target.value;
+                            setMenu({ ...menu, categories: c });
+                          }}
+                        />
+
+                        <label style={styles.label}>Price</label>
+                        <input
+                          style={styles.input}
+                          type="number"
+                          value={item.price}
+                          onChange={e => {
+                            const c = [...menu.categories];
+                            c[i].items[j].price = Number(e.target.value);
+                            setMenu({ ...menu, categories: c });
+                          }}
+                        />
+
+                        <label style={styles.label}>Quantity / Weight</label>
+                        <input
+                          style={styles.input}
+                          value={item.quantity || ""}
+                          onChange={e => {
+                            const c = [...menu.categories];
+                            c[i].items[j].quantity = e.target.value;
+                            setMenu({ ...menu, categories: c });
+                          }}
+                        />
+
+                        <label style={styles.label}>Description</label>
+                        <input
+                          style={styles.input}
+                          value={item.description}
+                          onChange={e => {
+                            const c = [...menu.categories];
+                            c[i].items[j].description = e.target.value;
+                            setMenu({ ...menu, categories: c });
+                          }}
+                        />
+
+                        {/* ✅ ITEM IMAGE URL */}
+                        <label style={styles.label}>Item Image (URL)</label>
+                        <input
+                          style={styles.input}
+                          value={item.image || ""}
+                          onChange={e => {
+                            const c = [...menu.categories];
+                            c[i].items[j].image = e.target.value;
+                            setMenu({ ...menu, categories: c });
+                          }}
+                        />
+
+                        <label style={styles.checkbox}>
+                          <input
+                            type="checkbox"
+                            checked={item.available}
+                            onChange={e => {
+                              const c = [...menu.categories];
+                              c[i].items[j].available = e.target.checked;
+                              setMenu({ ...menu, categories: c });
+                            }}
+                          />
+                          {item.available ? "👁 Show Item" : "🚫 Hide Item"}
+                        </label>
+
+                        <button
+                          style={styles.deleteBtn}
+                          onClick={() => removeItem(i, j)}
+                        >
+                          Remove Item
+                        </button>
+                      </div>
+                    ))}
+
+                  <button style={styles.addBtn} onClick={() => addItem(i)}>
+                    ➕ Add Item
+                  </button>
+                </>
+              )}
+            </div>
+          ))}
 
         <button style={styles.addBtn} onClick={addCategory}>
           ➕ Add Category
         </button>
-
       </div>
     </div>
   );
 }
 
-/* ================= HELPERS ================= */
-
+/* HELPERS */
 function prettyColorName(key) {
   const map = {
     bg: "Background Color",
     primary: "Highlight Color",
     text: "Text Color",
-    cardBg: "Item Card Color",
-    cardText: "Item Text Color",
-    divider: "Divider Line Color"
+    cardBg: "Card Background",
+    cardText: "Card Text",
+    divider: "Divider Line",
+    categoryDesc: "Category Description Color" // ✅ ADD THIS
   };
   return map[key] || key;
 }
 
-/* ================= STYLES ================= */
-
+/* STYLES */
 const styles = {
   page: { background: "#f1f3f6", minHeight: "100vh", padding: 16 },
   container: { maxWidth: 1100, margin: "auto" },
@@ -302,7 +370,7 @@ const styles = {
   title: { fontSize: 26, fontWeight: 900 },
   saveBtn: { background: "#4caf50", color: "#fff", padding: "14px 22px", borderRadius: 12, border: "none", fontWeight: 800 },
   card: { background: "#fff", padding: 18, borderRadius: 16, marginBottom: 20 },
-  cardTitle: { fontSize: 18, fontWeight: 800, marginBottom: 12 },
+  cardTitle: { fontSize: 18, fontWeight: 800 },
   label: { fontWeight: 700, marginTop: 10, display: "block" },
   input: { width: "100%", padding: 12, borderRadius: 10, border: "1px solid #ddd", marginTop: 6 },
   checkbox: { display: "flex", gap: 10, alignItems: "center", marginTop: 12, fontWeight: 600 },

@@ -3,11 +3,10 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 import Footer from "./Footer";
 
-
 export default function Menu() {
   const [menu, setMenu] = useState(null);
   const [error, setError] = useState("");
-  const [openCats, setOpenCats] = useState({}); // dropdown state
+  const [openCats, setOpenCats] = useState({});
 
   // 🔹 Read shop id from URL
   const params = new URLSearchParams(window.location.search);
@@ -61,7 +60,8 @@ export default function Menu() {
     primary: theme.primary || "#ff9800",
     cardBg: theme.cardBg || "#1a1a1a",
     cardText: theme.cardText || "#ffffff",
-    divider: theme.divider || "rgba(255,255,255,0.2)"
+    divider: theme.divider || "rgba(255,255,255,0.2)",
+     categoryDesc: theme.categoryDesc || "rgba(255,255,255,0.75)" // ✅ NEW
   };
 
   const toggleCategory = (i) => {
@@ -73,13 +73,7 @@ export default function Menu() {
 
       {/* HEADER */}
       <header style={styles.header}>
-        {logo && (
-          <img
-            src={logo}
-            alt="logo"
-            style={styles.logo}
-          />
-        )}
+        {logo && <img src={logo} alt="logo" style={styles.logo} />}
 
         <h1 style={{ color: colors.primary }}>{shopName}</h1>
         <p style={{ opacity: 0.85 }}>{tagline}</p>
@@ -101,7 +95,7 @@ export default function Menu() {
             return (
               <section key={i} style={styles.category}>
 
-                {/* CATEGORY HEADER (DROPDOWN) */}
+                {/* CATEGORY HEADER */}
                 <button
                   onClick={() => toggleCategory(i)}
                   style={{
@@ -112,6 +106,31 @@ export default function Menu() {
                   <span>{cat.name}</span>
                   <span>{isOpenCat ? "−" : "+"}</span>
                 </button>
+
+                {/* CATEGORY IMAGE (optional, stand-alone) */}
+                {isOpenCat && cat.image && (
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    style={styles.categoryImg}
+                  />
+                )}
+
+                {/* CATEGORY DESCRIPTION (stand-alone) */}
+                {isOpenCat && cat.comment && (
+                //   <div style={styles.categoryDesc}>
+                //     {cat.comment}
+                //   </div>
+                <div
+  style={{
+    ...styles.categoryDesc,
+    color: colors.categoryDesc
+  }}
+>
+  {cat.comment}
+</div>
+
+                )}
 
                 {/* ITEMS */}
                 {isOpenCat && (
@@ -141,7 +160,6 @@ export default function Menu() {
                               <strong>₹{item.price}</strong>
                             </div>
 
-                            {/* ✅ QUANTITY / WEIGHT */}
                             {item.quantity && (
                               <div style={styles.qty}>
                                 {item.quantity}
@@ -162,8 +180,8 @@ export default function Menu() {
             );
           })}
       </main>
-      <Footer />
 
+      <Footer />
     </div>
   );
 }
@@ -212,6 +230,21 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     cursor: "pointer"
+  },
+  categoryImg: {
+    width: "100%",
+    maxHeight: 220,
+    objectFit: "cover",
+    borderRadius: 16,
+    marginTop: 14
+  },
+  categoryDesc: {
+    marginTop: 12,
+    marginBottom: 16,
+    fontSize: 15,
+    opacity: 0.85,
+    lineHeight: 1.6,
+    maxWidth: 900
   },
   grid: {
     display: "grid",
