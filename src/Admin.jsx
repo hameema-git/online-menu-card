@@ -184,49 +184,93 @@ export default function Admin() {
                 />
               </div>
             ))} */}
+{showTheme &&
+  Object.entries(menu.theme).map(([key, val]) => {
+    const isHexOpen = openAdminCats[`hex_${key}`];
 
-            {showTheme &&
-  Object.entries(menu.theme).map(([key, val]) => (
-    <div key={key} style={{ marginBottom: 16 }}>
-      
-      <label style={{ fontWeight: 700 }}>
-        {prettyColorName(key)}
-      </label>
+    return (
+      <div key={key} style={{ marginBottom: 18 }}>
 
-      {/* 🎨 Color Picker */}
-      <input
-        type="color"
-        value={val}
-        onChange={e =>
-          setMenu({
-            ...menu,
-            theme: { ...menu.theme, [key]: e.target.value }
-          })
-        }
-        style={{ width: 60, height: 36, border: "none", marginTop: 6 }}
-      />
+        {/* Label */}
+        <label style={{ fontWeight: 700 }}>
+          {prettyColorName(key)}
+        </label>
 
-      {/* 🔢 HEX Input (Mobile friendly) */}
-      <input
-        type="text"
-        placeholder="#ff9800"
-        value={val}
-        onChange={e =>
-          setMenu({
-            ...menu,
-            theme: { ...menu.theme, [key]: e.target.value }
-          })
-        }
-        style={{
-          width: "100%",
-          padding: 10,
-          marginTop: 8,
-          borderRadius: 8,
-          border: "1px solid #ddd"
-        }}
-      />
-    </div>
-  ))}
+        {/* Right-aligned controls */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: 10,
+            marginTop: 6
+          }}
+        >
+          {/* 🎨 Color Picker */}
+          <input
+            type="color"
+            value={val}
+            onChange={e =>
+              setMenu({
+                ...menu,
+                theme: { ...menu.theme, [key]: e.target.value }
+              })
+            }
+            style={{
+              width: 42,
+              height: 32,
+              border: "none",
+              padding: 0
+            }}
+          />
+
+          {/* 🔽 Toggle HEX input */}
+          <button
+            type="button"
+            onClick={() =>
+              setOpenAdminCats(p => ({
+                ...p,
+                [`hex_${key}`]: !p[`hex_${key}`]
+              }))
+            }
+            style={{
+              background: "#eee",
+              border: "none",
+              padding: "6px 10px",
+              borderRadius: 6,
+              cursor: "pointer",
+              fontWeight: 600
+            }}
+          >
+            {isHexOpen ? "Hide code" : "Edit code"}
+          </button>
+        </div>
+
+        {/* 🔢 HEX INPUT (hidden by default) */}
+        {isHexOpen && (
+          <input
+            type="text"
+            placeholder="#ff9800"
+            value={val}
+            onChange={e =>
+              setMenu({
+                ...menu,
+                theme: { ...menu.theme, [key]: e.target.value }
+              })
+            }
+            style={{
+              width: "100%",
+              padding: 10,
+              marginTop: 8,
+              borderRadius: 8,
+              border: "1px solid #ddd"
+            }}
+          />
+        )}
+      </div>
+    );
+  })}
+
 
         </div>
 
