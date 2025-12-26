@@ -371,7 +371,9 @@ function prettyColorName(key) {
     cardBg: "Card Background",
     cardText: "Card Text",
     divider: "Divider Line",
-    categoryDesc: "Category Description Color" // ✅ ADD THIS
+    categoryDesc: "Category Description Color" ,// ✅ ADD THIS
+    closedBg: "Shop Closed Background",
+    closedText: "Shop Closed Text Color"
   };
   return map[key] || key;
 }
