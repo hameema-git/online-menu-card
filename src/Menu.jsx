@@ -61,7 +61,10 @@ export default function Menu() {
     cardBg: theme.cardBg || "#1a1a1a",
     cardText: theme.cardText || "#ffffff",
     divider: theme.divider || "rgba(255,255,255,0.2)",
-     categoryDesc: theme.categoryDesc || "rgba(255,255,255,0.75)" // ✅ NEW
+    categoryDesc: theme.categoryDesc || "rgba(255,255,255,0.75)" ,// ✅ NEW
+    closedBg: theme.closedBg || "#c59a9a",
+    closedText: theme.closedText || "#D73535",
+   closedMessage: theme.closedMessage || "Shop Closed" // ✅ NEW
   };
 
   const toggleCategory = (i) => {
@@ -78,11 +81,24 @@ export default function Menu() {
         <h1 style={{ color: colors.primary }}>{shopName}</h1>
         <p style={{ opacity: 0.85 }}>{tagline}</p>
 
-        {!isOpen && (
+        {/* {!isOpen && (
           <div style={styles.closed}>
             🚫 Shop Closed
           </div>
-        )}
+        )} */}
+
+        {!isOpen && (
+  <div
+    style={{
+      ...styles.closed,
+      background: colors.closedBg,
+      color: colors.closedText
+    }}
+  >
+    🚫 {colors.closedMessage}
+  </div>
+)}
+
       </header>
 
       {/* MENU */}

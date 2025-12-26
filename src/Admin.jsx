@@ -143,6 +143,20 @@ export default function Admin() {
             />
             {menu.isOpen ? "🟢 Shop Open" : "🔴 Shop Closed"}
           </label>
+          <label style={styles.label}>Shop Closed Message</label>
+<input
+  style={styles.input}
+  value={menu.theme.closedMessage || ""}
+  onChange={e =>
+    setMenu({
+      ...menu,
+      theme: {
+        ...menu.theme,
+        closedMessage: e.target.value
+      }
+    })
+  }
+/>
         </div>
 
         {/* THEME */}
