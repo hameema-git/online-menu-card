@@ -366,7 +366,7 @@ export default function Admin() {
 function prettyColorName(key) {
   const map = {
     bg: "Background Color",
-    primary: "Highlight Color",
+    // primary: "Highlight Color",
     text: "Text Color",
     cardBg: "Card Background",
     cardText: "Card Text",
