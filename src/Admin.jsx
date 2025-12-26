@@ -168,7 +168,7 @@ export default function Admin() {
             🎨 Menu Colors {showTheme ? "−" : "+"}
           </h3>
 
-          {showTheme &&
+          {/* {showTheme &&
             Object.entries(menu.theme).map(([key, val]) => (
               <div key={key} style={styles.colorRow}>
                 <span>{prettyColorName(key)}</span>
@@ -183,7 +183,51 @@ export default function Admin() {
                   }
                 />
               </div>
-            ))}
+            ))} */}
+
+            {showTheme &&
+  Object.entries(menu.theme).map(([key, val]) => (
+    <div key={key} style={{ marginBottom: 16 }}>
+      
+      <label style={{ fontWeight: 700 }}>
+        {prettyColorName(key)}
+      </label>
+
+      {/* 🎨 Color Picker */}
+      <input
+        type="color"
+        value={val}
+        onChange={e =>
+          setMenu({
+            ...menu,
+            theme: { ...menu.theme, [key]: e.target.value }
+          })
+        }
+        style={{ width: 60, height: 36, border: "none", marginTop: 6 }}
+      />
+
+      {/* 🔢 HEX Input (Mobile friendly) */}
+      <input
+        type="text"
+        placeholder="#ff9800"
+        value={val}
+        onChange={e =>
+          setMenu({
+            ...menu,
+            theme: { ...menu.theme, [key]: e.target.value }
+          })
+        }
+        style={{
+          width: "100%",
+          padding: 10,
+          marginTop: 8,
+          borderRadius: 8,
+          border: "1px solid #ddd"
+        }}
+      />
+    </div>
+  ))}
+
         </div>
 
         {/* CATEGORIES */}
