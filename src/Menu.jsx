@@ -230,7 +230,7 @@ const styles = {
     padding: "8px 14px",
     background: "#c59a9aff",
     borderRadius: 8,
-    text:"#D73535",
+    color: "#D73535",
     display: "inline-block",
     fontWeight: 700
   },
