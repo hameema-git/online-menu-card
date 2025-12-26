@@ -228,8 +228,9 @@ const styles = {
   closed: {
     marginTop: 10,
     padding: "8px 14px",
-    background: "#7a0000",
+    background: "#c59a9aff",
     borderRadius: 8,
+    text:"#D73535",
     display: "inline-block",
     fontWeight: 700
   },
