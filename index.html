@@ -13,7 +13,12 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-PYS6BMKZ8D');
+      const params = new URLSearchParams(window.location.search);
+      const shopName = params.get('shop');
+
+      gtag('config', 'G-PYS6BMKZ8D', {
+        shop_name: shopName
+      });
     </script>
     <!-- End Google Analytics -->
 
